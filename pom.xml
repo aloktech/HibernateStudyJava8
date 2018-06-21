@@ -11,8 +11,9 @@
         <module>HibernateOnetoOne</module>
         <module>HibernateOnetoMany</module>
         <module>HibernateManytoMany</module>
-        <module>HibernateCache</module>
         <module>HibernateConnectionPool</module>
+        <module>HibernateEHCache</module>
+        <module>HibernateHazelcastCache</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
