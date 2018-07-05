@@ -31,52 +31,51 @@ import org.junit.jupiter.api.Test;
  * @author ameher
  */
 @Log4j2
-public class SampleOneToOneTest {
+public class OneToOneTest {
 
     @BeforeAll
-    public static void setUp() {
+    public static void setUp() throws RepositoryException {
         try {
             HibernateService.INSTANCE.config("test.hibernate.cfg.xml");
         } catch (RepositoryException ex) {
-            log.error(ex.getMessage());
+            throw  ex;
         }
     }
 
     @AfterAll
-    public static void shutDown() {
+    public static void shutDown() throws RepositoryException {
         try {
             HibernateService.INSTANCE.shutDown();
         } catch (RepositoryException ex) {
-            log.error(ex.getMessage());
+            throw  ex;
         }
     }
 
-//    @Disabled
     @Test
-    public void personAdd() {
+    public void personAdd() throws RepositoryException {
         Person person = new Person();
 
         PersonRepository repo = new PersonRepository();
         try {
-            List<? extends IData> persons = repo.findAllPersons();
+            List<? extends IData> persons = repo.findAllPersonsAsJPAQuery();
             assertTrue(persons.isEmpty());
         } catch (RepositoryException ex) {
-            log.error(ex.getMessage());
+            throw  ex;
         }
         try {
             repo.addData(person);
         } catch (RepositoryException ex) {
-            log.error(ex.getMessage());
+            throw  ex;
         }
         try {
-            List<? extends IData> persons = repo.findAllPersons();
+            List<? extends IData> persons = repo.findAllPersonsAsJPAQuery();
             assertFalse(persons.isEmpty());
 
             person = (Person) persons.get(0);
 
             assertNotNull(person.getId());
 
-            persons = repo.findAllPersons();
+            persons = repo.findAllPersonsAsNativeQuery();
             assertFalse(persons.isEmpty());
 
             person = (Person) persons.get(0);
@@ -85,16 +84,15 @@ public class SampleOneToOneTest {
 
             repo.deleteData(person);
 
-            persons = repo.findAllPersons();
+            persons = repo.findAllPersonsAsJPAQuery();
             assertTrue(persons.isEmpty());
         } catch (RepositoryException ex) {
-            log.error(ex.getMessage());
+            throw  ex;
         }
     }
 
-//    @Disabled
     @Test
-    public void personDetailAdd() {
+    public void personDetailAdd() throws RepositoryException {
         PersonDetail personDetail = new PersonDetail();
 
         PersonDetailRepository repo = new PersonDetailRepository();
@@ -102,12 +100,12 @@ public class SampleOneToOneTest {
             List<PersonDetail> persons = repo.findAllPersonDetail();
             assertTrue(persons.isEmpty());
         } catch (RepositoryException ex) {
-            log.error(ex.getMessage());
+            throw  ex;
         }
         try {
             repo.addData(personDetail);
         } catch (RepositoryException ex) {
-            log.error(ex.getMessage());
+            throw  ex;
         }
         try {
             List<PersonDetail> persons = repo.findAllPersonDetail();
@@ -129,13 +127,12 @@ public class SampleOneToOneTest {
             persons = repo.findAllPersonDetail();
             assertTrue(persons.isEmpty());
         } catch (RepositoryException ex) {
-            log.error(ex.getMessage());
+            throw  ex;
         }
     }
 
-//    @Disabled
     @Test
-    public void personAndPersonDetailCheck() {
+    public void personAndPersonDetailCheck() throws RepositoryException {
         Person personA = new Person();
 
         PersonDetail personDetailA = new PersonDetail();
@@ -148,21 +145,21 @@ public class SampleOneToOneTest {
         PersonDetailRepository personDetailRepo = new PersonDetailRepository();
 
         try {
-            List<? extends IData> persons = personRepo.findAllPersons();
+            List<? extends IData> persons = personRepo.findAllPersonsAsJPAQuery();
             assertTrue(persons.isEmpty());
             List<PersonDetail> personDetails = personDetailRepo.findAllPersonDetail();
             assertTrue(personDetails.isEmpty());
         } catch (RepositoryException ex) {
-            log.error(ex.getMessage());
+            throw  ex;
         }
         try {
             personRepo.addData(personA, personDetailA);
             log.info("Person and PersonDetail are added");
         } catch (RepositoryException ex) {
-            log.error(ex.getMessage());
+            throw  ex;
         }
         try {
-            List<? extends IData> persons = personRepo.findAllPersons();
+            List<? extends IData> persons = personRepo.findAllPersonsAsJPAQuery();
             assertFalse(persons.isEmpty());
             personA = (Person) persons.get(0);
             log.info("Got the Person");
@@ -172,26 +169,25 @@ public class SampleOneToOneTest {
             assertNotNull(personDetailA.getId());
             assertEquals("Alok", personA.getPersonDetail().getFirstName());
         } catch (RepositoryException ex) {
-            log.error(ex.getMessage());
+            throw  ex;
         }
         try {
             personRepo.deleteData(personA, personDetailA);
         } catch (RepositoryException ex) {
-            Logger.getLogger(SampleOneToOneTest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(OneToOneTest.class.getName()).log(Level.SEVERE, null, ex);
         }
         try {
-            List<? extends IData> persons = personRepo.findAllPersons();
+            List<? extends IData> persons = personRepo.findAllPersonsAsJPAQuery();
             assertTrue(persons.isEmpty());
             List<PersonDetail> personDetails = personDetailRepo.findAllPersonDetail();
             assertTrue(personDetails.isEmpty());
         } catch (RepositoryException ex) {
-            log.error(ex.getMessage());
+            throw  ex;
         }
     }
-
-//    @Disabled
+    
     @Test
-    public void findPersonByName() {
+    public void findPersonByNameOnJPAQuery() throws RepositoryException {
         Person personA = new Person();
 
         PersonDetail personDetailA = new PersonDetail();
@@ -204,37 +200,86 @@ public class SampleOneToOneTest {
         PersonDetailRepository personDetailRepo = new PersonDetailRepository();
 
         try {
-            List<? extends IData> persons = personRepo.findAllPersons();
+            List<? extends IData> persons = personRepo.findAllPersonsAsJPAQuery();
             assertTrue(persons.isEmpty());
             List<PersonDetail> personDetails = personDetailRepo.findAllPersonDetail();
             assertTrue(personDetails.isEmpty());
         } catch (RepositoryException ex) {
-            log.error(ex.getMessage());
+            throw  ex;
         }
         try {
             personRepo.addData(personA, personDetailA);
             log.info("Person and PersonDetail are added");
         } catch (RepositoryException ex) {
-            log.error(ex.getMessage());
+            throw  ex;
         }
         try {
-            Optional<PersonInfo> personOpt = personRepo.findPersonInfoByFirstName("Alok");
+            Optional<PersonInfo> personOpt = personRepo.findPersonInfoByFirstNameAsJPAQuery("Alok");
             assertTrue(personOpt.isPresent());
             if (personOpt.isPresent()) {
                 PersonInfo info = personOpt.get();
                 assertEquals("Alok", info.getFirstName());
             }
         } catch (RepositoryException ex) {
-            log.error(ex.getMessage());
+            throw  ex;
         }
         try {
             personA = personRepo.findPersonByFirstName("Alok").get();
             personRepo.deleteData(personA, personA.getPersonDetail());
 
-            List<? extends IData> persons = personRepo.findAllPersons();
+            List<? extends IData> persons = personRepo.findAllPersonsAsJPAQuery();
             assertTrue(persons.isEmpty());
         } catch (RepositoryException ex) {
-            log.error(ex.getMessage());
+            throw  ex;
+        }
+
+    }
+
+    @Test
+    public void findPersonByNameOnNativeQuery() throws RepositoryException {
+        Person personA = new Person();
+
+        PersonDetail personDetailA = new PersonDetail();
+        personDetailA.setFirstName("Alok");
+
+        personA.setPersonDetail(personDetailA);
+        personDetailA.setPerson(personA);
+
+        PersonRepository personRepo = new PersonRepository();
+        PersonDetailRepository personDetailRepo = new PersonDetailRepository();
+
+        try {
+            List<? extends IData> persons = personRepo.findAllPersonsAsJPAQuery();
+            assertTrue(persons.isEmpty());
+            List<PersonDetail> personDetails = personDetailRepo.findAllPersonDetail();
+            assertTrue(personDetails.isEmpty());
+        } catch (RepositoryException ex) {
+            throw  ex;
+        }
+        try {
+            personRepo.addData(personA, personDetailA);
+            log.info("Person and PersonDetail are added");
+        } catch (RepositoryException ex) {
+            throw  ex;
+        }
+        try {
+            Optional<PersonInfo> personOpt = personRepo.findPersonInfoByFirstNameAsNativeQuery("Alok");
+            assertTrue(personOpt.isPresent());
+            if (personOpt.isPresent()) {
+                PersonInfo info = personOpt.get();
+                assertEquals("Alok", info.getFirstName());
+            }
+        } catch (RepositoryException ex) {
+            throw  ex;
+        }
+        try {
+            personA = personRepo.findPersonByFirstName("Alok").get();
+            personRepo.deleteData(personA, personA.getPersonDetail());
+
+            List<? extends IData> persons = personRepo.findAllPersonsAsJPAQuery();
+            assertTrue(persons.isEmpty());
+        } catch (RepositoryException ex) {
+            throw  ex;
         }
 
     }

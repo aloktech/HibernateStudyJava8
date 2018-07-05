@@ -3,6 +3,7 @@
 <hibernate-configuration>
     <session-factory>
         <!--Testing-->
+        <property name="hibernate.generate_statistics">true</property>
         <property name="hibernate.connection.driver_class">org.h2.Driver</property>
         <property name="hibernate.connection.url">jdbc:h2:mem:samplehb;MODE=MySQL</property>
         <property name="hibernate.connection.username">sa</property>
@@ -18,7 +19,6 @@
         <property name="hibernate.cache.use_second_level_cache">true</property>
         <property name="hibernate.cache.use_minimal_puts">true</property>
         <property name="hibernate.cache.hazelcast.use_lite_member">true</property>
-        <!--<property name="hibernate.cache.provider_configuration_file_resource_path">hazelcast-custom-config.xml</property>-->
         <property name="hibernate.cache.provider_configuration_file_resource_path">hazelcast.xml</property>
         <property name="hibernate.cache.region.factory_class">com.hazelcast.hibernate.HazelcastCacheRegionFactory</property>
         

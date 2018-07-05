@@ -29,28 +29,28 @@ import org.junit.jupiter.api.Test;
  * @author ameher
  */
 @Log4j2
-public class SampleOneToManyTest {
+public class OneToManyTest {
 
     @BeforeAll
-    public static void setUp() {
+    public static void setUp() throws RepositoryException {
         try {
             HibernateService.INSTANCE.config("test.hibernate.cfg.xml");
         } catch (RepositoryException ex) {
-            log.error(ex.getMessage());
+            throw  ex;
         }
     }
 
     @AfterAll
-    public static void shutDown() {
+    public static void shutDown() throws RepositoryException {
         try {
             HibernateService.INSTANCE.shutDown();
         } catch (RepositoryException ex) {
-            log.error(ex.getMessage());
+            throw  ex;
         }
     }
 
     @Test
-    public void addPersonCheck() {
+    public void addPersonCheck() throws RepositoryException {
         Person person = new Person();
 
         PersonDetail personDetail = new PersonDetail();
@@ -75,7 +75,7 @@ public class SampleOneToManyTest {
         try {
             repo.addData(person, personDetail, address1, address2);
         } catch (RepositoryException ex) {
-            log.error(ex.getMessage());
+            throw  ex;
         }
 
         List<Person> persons = repo.findAllPersons();

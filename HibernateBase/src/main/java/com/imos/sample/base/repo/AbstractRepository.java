@@ -173,6 +173,12 @@ public class AbstractRepository<T extends IData> implements IRepository<T> {
         return extractResult(queryStr, QueryResultType.SINGLE, QueryType.JPA_QUERY).getSingleData();
     }
 
+    protected <S> Optional<S> extractUniqueResult(String queryStr, Function<Object, S> convert) throws RepositoryException {
+        return extractResult(queryStr, QueryResultType.SINGLE, QueryType.JPA_QUERY)
+                .getSingleData()
+                .map(convert);
+    }
+
     protected <S> Optional<S> extractUniqueResult(String queryStr, Class<S> cls) throws RepositoryException {
         return extractResultOfType(queryStr, QueryResultType.SINGLE, QueryType.JPA_QUERY, cls).getSingleData();
     }
@@ -183,6 +189,12 @@ public class AbstractRepository<T extends IData> implements IRepository<T> {
 
     protected <S> Optional<S> extractUniqueResult(String queryStr, QueryType queryType, Class<S> cls) throws RepositoryException {
         return extractResultOfType(queryStr, QueryResultType.SINGLE, queryType, cls).getSingleData();
+    }
+
+    protected <S> Optional<S> extractUniqueResult(String queryStr, QueryType queryType, Function<Object, S> convert) throws RepositoryException {
+        return extractResult(queryStr, QueryResultType.SINGLE, queryType)
+                .getSingleData()
+                .map(convert);
     }
 
     protected <S> List<S> extractListAsResult(String queryStr) throws RepositoryException {
@@ -216,14 +228,18 @@ public class AbstractRepository<T extends IData> implements IRepository<T> {
                 Query query = queryType.getDataType().apply(s, queryStr, cls);
                 return executeQuery(query, queryResultType, new QueryData<>());
             };
-            queryData = executeSession(con, cls);
+            queryData = Objects.isNull(cls) ? execute(con) : execute(con, cls);
         } catch (RepositoryException ex) {
             throw ex;
         }
         return queryData;
     }
 
-    private <S> QueryData executeSession(FunctionWithException<Session, QueryData> con, Class<S> cls) throws RepositoryException {
+    private <S> QueryData execute(FunctionWithException<Session, QueryData> con) throws RepositoryException {
+        return execute(con, Object.class);
+    }
+
+    private <S> QueryData execute(FunctionWithException<Session, QueryData> con, Class<S> cls) throws RepositoryException {
         Future<QueryData> future = SERVICE.submit(() -> {
             QueryData output = null;
             reLock.lock();

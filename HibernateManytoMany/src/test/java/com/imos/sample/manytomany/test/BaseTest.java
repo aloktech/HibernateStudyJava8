@@ -3,12 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.imos.sample.onetomany.test;
+package com.imos.sample.manytomany.test;
 
 import com.imos.sample.base.exception.RepositoryException;
 import com.imos.sample.base.HibernateService;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.hibernate.Session;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -18,33 +16,33 @@ import org.junit.jupiter.api.Test;
  *
  * @author ameher
  */
-public class SampleBaseTest {
+public class BaseTest {
     
     @BeforeAll
-    public static void setUp() {
+    public static void setUp() throws RepositoryException {
         try {
             HibernateService.INSTANCE.config("test.hibernate.cfg.xml");
         } catch (RepositoryException ex) {
-            Logger.getLogger(SampleBaseTest.class.getName()).log(Level.SEVERE, null, ex);
+           throw  ex;
         }
     }
     
     @AfterAll
-    public static void shutDown() {
+    public static void shutDown() throws RepositoryException {
         try {
             HibernateService.INSTANCE.shutDown();
         } catch (RepositoryException ex) {
-            Logger.getLogger(SampleBaseTest.class.getName()).log(Level.SEVERE, null, ex);
+           throw  ex;
         }
     }
     
     @Test
-    public void hibernateConnectionCheck() {
+    public void hibernateConnectionCheck() throws RepositoryException {
         try {
             Session session = HibernateService.INSTANCE.openConnection();
             HibernateService.INSTANCE.closeConnection(session);
         } catch (RepositoryException ex) {
-            Logger.getLogger(SampleBaseTest.class.getName()).log(Level.SEVERE, null, ex);
+           throw  ex;
         }
     }
 }

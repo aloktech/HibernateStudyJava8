@@ -24,28 +24,28 @@ import org.junit.jupiter.api.Test;
  * @author ameher
  */
 @Log4j2
-public class SampleBasicTest {
+public class ECacheTest {
 
     @BeforeAll
-    public static void setUp() {
+    public static void setUp() throws RepositoryException {
         try {
             HibernateService.INSTANCE.config("test.hibernate.cfg.xml");
         } catch (RepositoryException ex) {
-            log.error(ex.getMessage());
+            throw  ex;
         }
     }
 
     @AfterAll
-    public static void shutDown() {
+    public static void shutDown() throws RepositoryException {
         try {
             HibernateService.INSTANCE.shutDown();
         } catch (RepositoryException ex) {
-            log.error(ex.getMessage());
+            throw  ex;
         }
     }
 
     @Test
-    public void personAdd() {
+    public void personAdd() throws RepositoryException {
         Person person = new Person();
         person.setFirstName("Alok");
 
@@ -54,12 +54,12 @@ public class SampleBasicTest {
             List<Person> persons = repo.findAllPersons();
             assertTrue(persons.isEmpty());
         } catch (RepositoryException ex) {
-            log.error(ex.getMessage());
+            throw  ex;
         }
         try {
             repo.addData(person);
         } catch (RepositoryException ex) {
-            log.error(ex.getMessage());
+            throw  ex;
         }
         try {
             List<Person> persons = repo.findAllPersons();
@@ -87,12 +87,12 @@ public class SampleBasicTest {
             persons = repo.findAllPersons();
             assertTrue(persons.isEmpty());
         } catch (RepositoryException ex) {
-            log.error(ex.getMessage());
+            throw  ex;
         }
     }
 
     @Test
-    public void multiplePersonFind() {
+    public void multiplePersonFind() throws RepositoryException {
         Person person = new Person();
         person.setFirstName("Alok");
 
@@ -101,12 +101,12 @@ public class SampleBasicTest {
             List<Person> persons = repo.findAllPersons();
             assertTrue(persons.isEmpty());
         } catch (RepositoryException ex) {
-            log.error(ex.getMessage());
+            throw  ex;
         }
         try {
             repo.addData(person);
         } catch (RepositoryException ex) {
-            log.error(ex.getMessage());
+            throw  ex;
         }
         try {
             List<Person> persons;
@@ -127,7 +127,7 @@ public class SampleBasicTest {
             persons = repo.findAllPersons();
             assertTrue(persons.isEmpty());
         } catch (RepositoryException ex) {
-            log.error(ex.getMessage());
+            throw  ex;
         }
     }
 }

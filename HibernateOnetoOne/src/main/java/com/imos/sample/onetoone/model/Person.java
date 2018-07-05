@@ -13,6 +13,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.OptimisticLock;
 
 /**
  *
@@ -37,5 +38,6 @@ public class Person extends Base {
 
     @OneToOne
     @JoinColumn(name = "PERSON_DETAIL_ID_FK")
+    @OptimisticLock(excluded=true)
     private PersonDetail personDetail;
 }

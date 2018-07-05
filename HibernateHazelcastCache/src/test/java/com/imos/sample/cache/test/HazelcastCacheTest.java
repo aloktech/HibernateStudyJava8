@@ -17,7 +17,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -25,28 +24,28 @@ import org.junit.jupiter.api.Test;
  * @author ameher
  */
 @Log4j2
-public class SampleBasicTest {
+public class HazelcastCacheTest {
 
     @BeforeAll
-    public static void setUp() {
+    public static void setUp() throws RepositoryException {
         try {
             HibernateService.INSTANCE.config("test.hibernate.cfg.xml");
         } catch (RepositoryException ex) {
-            log.error(ex.getMessage());
+            throw  ex;
         }
     }
 
     @AfterAll
-    public static void shutDown() {
+    public static void shutDown() throws RepositoryException {
         try {
             HibernateService.INSTANCE.shutDown();
         } catch (RepositoryException ex) {
-            log.error(ex.getMessage());
+            throw  ex;
         }
     }
 
     @Test
-    public void personAdd() {
+    public void personAdd() throws RepositoryException {
         Person person = new Person();
         person.setFirstName("Alok");
 
@@ -55,12 +54,12 @@ public class SampleBasicTest {
             List<Person> persons = repo.findAllPersons();
             assertTrue(persons.isEmpty());
         } catch (RepositoryException ex) {
-            log.error(ex.getMessage());
+            throw  ex;
         }
         try {
             repo.addData(person);
         } catch (RepositoryException ex) {
-            log.error(ex.getMessage());
+            throw  ex;
         }
         try {
             List<Person> persons = repo.findAllPersons();
@@ -88,12 +87,12 @@ public class SampleBasicTest {
             persons = repo.findAllPersons();
             assertTrue(persons.isEmpty());
         } catch (RepositoryException ex) {
-            log.error(ex.getMessage());
+            throw  ex;
         }
     }
 
     @Test
-    public void multiplePersonFind() {
+    public void multiplePersonFind() throws RepositoryException {
         Person person = new Person();
         person.setFirstName("Alok");
 
@@ -102,12 +101,12 @@ public class SampleBasicTest {
             List<Person> persons = repo.findAllPersons();
             assertTrue(persons.isEmpty());
         } catch (RepositoryException ex) {
-            log.error(ex.getMessage());
+            throw  ex;
         }
         try {
             repo.addData(person);
         } catch (RepositoryException ex) {
-            log.error(ex.getMessage());
+            throw  ex;
         }
         try {
             List<Person> persons;
@@ -128,7 +127,70 @@ public class SampleBasicTest {
             persons = repo.findAllPersons();
             assertTrue(persons.isEmpty());
         } catch (RepositoryException ex) {
-            log.error(ex.getMessage());
+            throw  ex;
+        }
+    }
+
+    @Test
+    public void updatePersonInfo() throws RepositoryException {
+        Person person = new Person();
+        person.setFirstName("Alok");
+
+        PersonRepository repo = new PersonRepository(true);
+        try {
+            List<Person> persons = repo.findAllPersons();
+            assertTrue(persons.isEmpty());
+        } catch (RepositoryException ex) {
+            throw  ex;
+        }
+        try {
+            repo.addData(person);
+        } catch (RepositoryException ex) {
+            throw  ex;
+        }
+        try {
+            List<Person> persons;
+
+            for (int i = 0; i < 5; i++) {
+                persons = repo.findAllPersons();
+                assertFalse(persons.isEmpty());
+
+                person = persons.get(0);
+
+                assertEquals("Alok", person.getFirstName());
+                assertNotNull(person.getId());
+                log.info("Count: {}", (i + 1));
+            }
+        } catch (RepositoryException ex) {
+            throw  ex;
+        }
+        try {
+            person = repo.findPersonByName("Alok").get();
+            person.setFirstName("Pintu");
+            repo.updateData(person);
+        } catch (RepositoryException e) {
+            log.error(e.getMessage());
+        }
+        try {
+            List<Person> persons;
+
+            for (int i = 0; i < 5; i++) {
+                persons = repo.findAllPersons();
+                assertFalse(persons.isEmpty());
+
+                person = persons.get(0);
+
+                assertEquals("Pintu", person.getFirstName());
+                assertNotNull(person.getId());
+                log.info("Count: {}", (i + 1));
+            }
+
+            repo.deleteData(person);
+
+            persons = repo.findAllPersons();
+            assertTrue(persons.isEmpty());
+        } catch (RepositoryException ex) {
+            throw  ex;
         }
     }
 }
